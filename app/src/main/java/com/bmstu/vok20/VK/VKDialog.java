@@ -1,7 +1,5 @@
 package com.bmstu.vok20.VK;
 
-import android.graphics.Bitmap;
-
 /**
  * Created by anthony on 03.11.16.
  */
