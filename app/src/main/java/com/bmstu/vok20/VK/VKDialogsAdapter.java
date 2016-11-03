@@ -124,18 +124,21 @@ public class VKDialogsAdapter extends BaseAdapter {
                 .append(R.string.app_name);
 
         File appDir = new File(appDirPath.toString());
+        Log.d(TAG, "App dir: " + appDir.toString());
 
         if (!appDir.exists()) {
-            appDir.mkdir();
+            appDir.mkdirs();
         }
 
         StringBuilder imagePath = new StringBuilder();
 
         imagePath
-                .append(appDirPath.toString())
+                .append(appDir.toString())
                 .append(File.separator)
                 .append(userId)
                 .append(".jpg");
+
+        Log.d(TAG, "Image path: " + imagePath.toString());
 
         return imagePath.toString();
     }

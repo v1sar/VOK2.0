@@ -6,9 +6,9 @@ package com.bmstu.vok20.VK;
 
 public class VKMessage {
     private String body;
-    private Boolean isOut;
+    private boolean isOut;
 
-    public VKMessage(String body, Boolean isOut) {
+    public VKMessage(String body, boolean isOut) {
         this.body = body;
         this.isOut = isOut;
     }
@@ -21,11 +21,11 @@ public class VKMessage {
         this.body = body;
     }
 
-    public Boolean isOut() {
+    public boolean isOut() {
         return isOut;
     }
 
-    public void setIs_out(Boolean isOut) {
+    public void setIs_out(boolean isOut) {
         this.isOut = isOut;
     }
 }

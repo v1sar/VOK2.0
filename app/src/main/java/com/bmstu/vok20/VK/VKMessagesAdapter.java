@@ -80,4 +80,9 @@ public class VKMessagesAdapter extends BaseAdapter {
     private VKMessage getMessage(int position) {
         return (VKMessage) getItem(position);
     }
+
+    public void updateList(ArrayList<VKMessage> messages) {
+        this.messages = messages;
+        notifyDataSetChanged();
+    }
 }

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bmstu.vok20.MainActivity;
 import com.bmstu.vok20.R;
 import com.vk.sdk.api.VKApiConst;
+import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
@@ -43,6 +44,7 @@ public class VKMessagesActivity extends AppCompatActivity {
 
     private int userId;
     private VKMessagesAdapter messagesAdapter;
+    private ArrayList<VKMessage> messages = new ArrayList<VKMessage>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +62,6 @@ public class VKMessagesActivity extends AppCompatActivity {
     }
 
     private void getVKMessageHistory(final ListView messagesListView) {
-        final ArrayList<VKMessage> messages = new ArrayList<VKMessage>();
-
         VKRequest messagesRequest = new VKRequest(
                 MESSAGES_GET_HISTORY_METHOD,
                 VKParameters.from(
@@ -105,7 +105,7 @@ public class VKMessagesActivity extends AppCompatActivity {
         }
     };
 
-    private void sendVKMessage(String messageText) {
+    private void sendVKMessage(final String messageText) {
         VKRequest sendMessageRequest = new VKRequest(
                 MESSAGES_SEND_METHOD,
                 VKParameters.from(
@@ -122,8 +122,17 @@ public class VKMessagesActivity extends AppCompatActivity {
                 EditText messageInput = (EditText) findViewById(R.id.vkSendMessageInput);
                 messageInput.setText("");
 
+                //messages.add(new VKMessage(messageText, true));
+                //messagesAdapter.updateList(messages);
+
                 Log.d(TAG, "Message send to user" + userId);
             }
+
+            @Override
+            public void onError(VKError error) {
+                super.onError(error);
+                messages.remove(messages.size() - 1);
+            }
         });
-    }
+    }   // sendVKMessage
 }
