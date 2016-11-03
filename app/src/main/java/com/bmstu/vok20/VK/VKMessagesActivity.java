@@ -103,7 +103,7 @@ public class VKMessagesActivity extends AppCompatActivity {
     };
 
     private void sendVKMessage(String messageText) {
-        VKRequest sendMessagerequest = new VKRequest(
+        VKRequest sendMessageRequest = new VKRequest(
                 MESSAGES_SEND_METHOD,
                 VKParameters.from(
                         VKApiConst.USER_ID, userId,
@@ -111,7 +111,7 @@ public class VKMessagesActivity extends AppCompatActivity {
                 )
         );
 
-        sendMessagerequest.executeWithListener(new VKRequest.VKRequestListener() {
+        sendMessageRequest.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
