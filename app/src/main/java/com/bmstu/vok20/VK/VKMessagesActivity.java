@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -54,6 +55,8 @@ public class VKMessagesActivity extends AppCompatActivity {
 
         Button sendMessageBtn = (Button) findViewById(R.id.vkSendMessageBtn);
         sendMessageBtn.setOnClickListener(sendButtonClickListener);
+
+        VKLongPollService.startActionUpdateMessages(VKMessagesActivity.this, userId);
     }
 
     private void getVKMessageHistory(final ListView messagesListView) {
@@ -97,7 +100,7 @@ public class VKMessagesActivity extends AppCompatActivity {
     View.OnClickListener sendButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String messageText = ((TextView) findViewById(R.id.vkSendMessageInput)).getText().toString();
+            String messageText = ((EditText) findViewById(R.id.vkSendMessageInput)).getText().toString();
             sendVKMessage(messageText);
         }
     };
@@ -115,6 +118,10 @@ public class VKMessagesActivity extends AppCompatActivity {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
+
+                EditText messageInput = (EditText) findViewById(R.id.vkSendMessageInput);
+                messageInput.setText("");
+
                 Log.d(TAG, "Message send to user" + userId);
             }
         });

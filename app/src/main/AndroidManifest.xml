@@ -19,6 +19,7 @@
             android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
+
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -28,7 +29,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".VK.VKMessagesActivity"></activity>
+
+        <activity android:name=".VK.VKMessagesActivity" />
+
+        <service
+            android:name=".VK.VKLongPollService"
+            android:enabled="true"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="ACTION_VK_UPDATE_MESSAGES" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

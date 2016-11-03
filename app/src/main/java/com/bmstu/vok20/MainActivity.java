@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.bmstu.vok20.VK.VKDialogsFragment;
+import com.flurry.android.FlurryAgent;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKSdk;
@@ -41,6 +42,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        /*** Flurry Analitics ***/
+        final String FLURRY_KEY = "P5J926ZM3YPF4WTPRPVY";
+        FlurryAgent.init(MainActivity.this, FLURRY_KEY);
+        /*** ***/
     }
 
     @Override
