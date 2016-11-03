@@ -1,6 +1,7 @@
 package com.bmstu.vok20.VK;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -22,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -74,31 +74,32 @@ public class VKDialogsAdapter extends BaseAdapter {
         ImageView avatarView = (ImageView) view.findViewById(R.id.vkDialogAvatar);
         getAvatarFromSDorUpload(avatarView, dialog.getUserId(), dialog.getAvatarUrl());
 
-        view.setTag(dialog.getUserId());
+        view.setId(dialog.getUserId());
         view.setOnClickListener(onClickDialogListener);
 
         return view;
     }
 
     private VKDialog getDialog(int position) {
-        return ((VKDialog) getItem(position));
+        return (VKDialog) getItem(position);
     }
 
     private View.OnClickListener onClickDialogListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            // Todo: open dialog
+            int userId = v.getId();
+            Intent intent = new Intent(context, VKMessagesActivity.class).putExtra("id", userId);
+            context.startActivity(intent);
         }
     };
 
-
+    /******** Блок работы с SD ******/
     private static class AsyncAvatarHelper {
-        public ImageView imageView;
-        public int userId;
-        public String imageUrl;
+        ImageView imageView;
+        int userId;
+        String imageUrl;
     }
 
-    /******** Блок работы с SD ******/
     private void getAvatarFromSDorUpload(ImageView imageView, int userId, String imageUrl) {
         Bitmap avatar = getAvatarFromSD(userId);
 

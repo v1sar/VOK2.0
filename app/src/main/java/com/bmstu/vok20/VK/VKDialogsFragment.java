@@ -120,7 +120,8 @@ public class VKDialogsFragment extends Fragment {
                             try {
                                 dialog.setAvatarUrl(user.fields.get("photo_200").toString());
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                // e.printStackTrace();
+                                Log.w(TAG, "Photo missing, user" + dialog.getUserId());
                             }
                         }
 
