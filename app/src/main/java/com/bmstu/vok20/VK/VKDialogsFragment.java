@@ -57,7 +57,6 @@ public class VKDialogsFragment extends Fragment {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "VK Login");
-
         ListView dialogList = (ListView) vkDialogsView.findViewById(R.id.vkDialogList);
         getVKDialogs(dialogList);
     }
