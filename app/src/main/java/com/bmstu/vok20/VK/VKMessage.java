@@ -45,6 +45,10 @@ public class VKMessage {
         this.timestamp = timestamp;
     }
 
+    public static long getId() {
+        return id;
+    }
+
     public int getSenderId() {
         return senderId;
     }
