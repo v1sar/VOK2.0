@@ -1,11 +1,15 @@
 package com.bmstu.vok20.VK;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,10 +92,26 @@ public class VKDialogsAdapter extends BaseAdapter {
         @Override
         public void onClick(View v) {
             int userId = v.getId();
-            Intent intent = new Intent(context, VKMessagesActivity.class).putExtra("id", userId);
-            context.startActivity(intent);
+            showVKMessagesFragment(userId);
         }
     };
+
+    private void showVKMessagesFragment(int id) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", id);
+        FragmentManager fM = ((AppCompatActivity) context).getSupportFragmentManager();
+        FragmentTransaction transaction = fM.beginTransaction();
+        Fragment f = new VKMessagesFragment();
+        f.setArguments(bundle);
+        Fragment dialogs = fM.findFragmentById(R.id.content_main);
+        if (dialogs != null && dialogs.isAdded())
+        {
+            transaction.remove(dialogs);
+        }
+        transaction.replace(R.id.content_main, f);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 
     /******** Блок работы с SD ******/
     private static class AsyncAvatarHelper {

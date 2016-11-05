@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".VK.VKMessagesActivity" />
+        <activity android:name=".VK.VKMessagesFragment" />
 
         <service
             android:name=".VK.VKLongPollService"

@@ -9,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.bmstu.vok20.VK.VKMessagesActivity"
+    tools:context="com.bmstu.vok20.VK.VKMessagesFragment"
     android:orientation="vertical"
     android:weightSum="1">
 
