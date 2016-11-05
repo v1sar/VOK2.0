@@ -11,7 +11,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.bmstu.vok20.DatabaseHelper;
 import com.bmstu.vok20.R;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.vk.sdk.VKScope;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKParameters;
@@ -23,6 +31,7 @@ import com.vk.sdk.api.model.VKList;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +49,7 @@ public class VKMessagesFragment extends Fragment {
     private static final int MESSAGES_COUNT = 30;
     private static final int MESSAGES_REVERSE = 0;
 
+    private DatabaseHelper databaseHelper;
     private int userId;
     private View vkMessagesView;
     private VKMessagesAdapter messagesAdapter;
@@ -87,8 +97,39 @@ public class VKMessagesFragment extends Fragment {
                 }
 
                 Collections.reverse(messageList);
+                //****ТОЛЬКО ПРИ НАЛИЧИИ ИНТЕРНЕТА*****
+                // удаление сообщений из БД
+                try {
+                    Dao<VKMessage, Integer> vkMessageDao = getHelper().getVkMessageDao();
+                    DeleteBuilder<VKMessage, Integer> deleteBuilder = vkMessageDao.deleteBuilder();
+                    deleteBuilder.where().eq(VKMessage.VK_MESSAGE_SENDER_ID_FIELD_NAME, userId);
+                    deleteBuilder.delete();
+                } catch (SQLException e) {
+                    Log.e(TAG, "Cannot delete messages from DB for user: "+userId, e);
+                }
+
+                // добавление сообщений в БД
                 for (VKApiMessage message : messageList) {
-                    messages.add(new VKMessage(message.body, message.out));
+                    try {
+                        Dao<VKMessage, Integer> vkMessageDao = getHelper().getVkMessageDao();
+                        VKMessage vkMessage = new VKMessage(message.user_id, message.out, message.body, message.date);
+                        vkMessageDao.create(vkMessage);
+                    } catch (SQLException e) {
+                        Log.e(TAG, "Cannot add messages to DB to user: "+userId, e);
+                    }
+                }
+                // считывание сообщений из БД
+                try {
+                    Dao<VKMessage, Integer> vkMessageDao = getHelper().getVkMessageDao();
+                    QueryBuilder<VKMessage, Integer> queryBuilder = vkMessageDao.queryBuilder();
+                    queryBuilder.where().eq(VKMessage.VK_MESSAGE_SENDER_ID_FIELD_NAME, userId);
+                    queryBuilder.orderBy(VKMessage.VK_MESSAGE_TIMESTAMP_FIELD_NAME, true);
+                    List<VKMessage> vkMessageList = queryBuilder.query();
+                    for (VKMessage message : vkMessageList) {
+                        messages.add(message);
+                    }
+                } catch (SQLException e) {
+                    Log.e(TAG, "Cannot read messages from DB to user: "+userId, e);
                 }
 
                 messagesAdapter = new VKMessagesAdapter(getActivity(), messages);
@@ -136,4 +177,21 @@ public class VKMessagesFragment extends Fragment {
             }
         });
     }   // sendVKMessage
+
+    protected DatabaseHelper getHelper() {
+        if (databaseHelper == null) {
+            databaseHelper =
+                    OpenHelperManager.getHelper(getActivity(), DatabaseHelper.class);
+        }
+        return databaseHelper;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (databaseHelper != null) {
+            OpenHelperManager.releaseHelper();
+            databaseHelper = null;
+        }
+    }
 }

@@ -11,11 +11,10 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "vk_message")
 public class VKMessage {
 
-    private final static String VK_MESSAGE_SENDER_ID_FIELD_NAME = "sender_id";
-    private final static String VK_MESSAGE_RECEIVER_ID_FIELD_NAME = "receiver_id";
-    private final static String VK_MESSAGE_IS_OUT_FIELD_NAME = "is_out";
-    private final static String VK_MESSAGE_BODY_FIELD_NAME = "body";
-    private final static String VK_MESSAGE_TIMESTAMP_FIELD_NAME = "timestamp";
+    public final static String VK_MESSAGE_SENDER_ID_FIELD_NAME = "sender_id";
+    public final static String VK_MESSAGE_IS_OUT_FIELD_NAME = "is_out";
+    public final static String VK_MESSAGE_BODY_FIELD_NAME = "body";
+    public final static String VK_MESSAGE_TIMESTAMP_FIELD_NAME = "timestamp";
 
     @DatabaseField(generatedId = true)
     private static long id;
@@ -23,23 +22,20 @@ public class VKMessage {
     @DatabaseField(canBeNull = false, dataType = DataType.INTEGER, columnName = VK_MESSAGE_SENDER_ID_FIELD_NAME)
     private int senderId;
 
-    @DatabaseField(canBeNull = false, dataType = DataType.INTEGER, columnName = VK_MESSAGE_RECEIVER_ID_FIELD_NAME)
-    private int receiverId;
-
     @DatabaseField(canBeNull = false, dataType = DataType.BOOLEAN, columnName = VK_MESSAGE_IS_OUT_FIELD_NAME)
     private boolean isOut;
 
     @DatabaseField(canBeNull = false, dataType = DataType.STRING, columnName = VK_MESSAGE_BODY_FIELD_NAME)
     private String body;
 
-    @DatabaseField(canBeNull = false, dataType = DataType.TIME_STAMP, columnName = VK_MESSAGE_TIMESTAMP_FIELD_NAME)
-    private int timestamp;
+    @DatabaseField(canBeNull = false, dataType = DataType.LONG, columnName = VK_MESSAGE_TIMESTAMP_FIELD_NAME)
+    private long timestamp;
 
     public VKMessage() {}
 
-    public VKMessage(int senderId, int receiverId, boolean isOut, String body, int timestamp) {
+
+    public VKMessage(int senderId, boolean isOut, String body, long timestamp) {
         this.senderId = senderId;
-        this.receiverId = receiverId;
         this.isOut = isOut;
         this.body = body;
         this.timestamp = timestamp;
@@ -55,14 +51,6 @@ public class VKMessage {
 
     public void setSenderId(int senderId) {
         this.senderId = senderId;
-    }
-
-    public int getReceiverId() {
-        return receiverId;
-    }
-
-    public void setReceiverId(int receiverId) {
-        this.receiverId = receiverId;
     }
 
     public boolean isOut() {
@@ -81,11 +69,22 @@ public class VKMessage {
         this.body = body;
     }
 
-    public int getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(int timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("id=").append(id);
+        sb.append(", ").append("senderId=").append(senderId);
+        sb.append(", ").append("isOut=").append(isOut);
+        sb.append(", ").append("body=").append(body);
+        sb.append(", ").append("timestamp=").append(timestamp);
+        return sb.toString();
     }
 }
