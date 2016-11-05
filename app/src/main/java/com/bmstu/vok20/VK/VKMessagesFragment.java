@@ -1,24 +1,22 @@
 package com.bmstu.vok20.VK;
 
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.bmstu.vok20.MainActivity;
 import com.bmstu.vok20.R;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
-import com.vk.sdk.api.methods.VKApiMessages;
-import com.vk.sdk.api.model.VKApiGetMessagesResponse;
 import com.vk.sdk.api.model.VKApiMessage;
-import com.vk.sdk.api.model.VKApiModel;
 import com.vk.sdk.api.model.VKList;
 
 import org.json.JSONArray;
@@ -32,8 +30,8 @@ import java.util.List;
  * Created by anthony on 03.11.16.
  */
 
-public class VKMessagesActivity extends AppCompatActivity {
-    private final static String TAG = VKMessagesActivity.class.getSimpleName();
+public class VKMessagesFragment extends Fragment {
+    private final static String TAG = VKMessagesFragment.class.getSimpleName();
 
     private static final String MESSAGES_GET_HISTORY_METHOD = "messages.getHistory";
     private static final String MESSAGES_SEND_METHOD = "messages.send";
@@ -42,21 +40,24 @@ public class VKMessagesActivity extends AppCompatActivity {
     private static final int MESSAGES_REVERSE = 0;
 
     private int userId;
+    private View vkMessagesView;
     private VKMessagesAdapter messagesAdapter;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.vk_messages_activity);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        vkMessagesView = inflater.inflate(R.layout.vk_messages_fragment, container, false);
+        userId = getArguments().getInt("id");
+        return vkMessagesView;
+    }
 
-        userId = getIntent().getIntExtra("id", 0);
-        ListView vkMessagesList = (ListView) findViewById(R.id.vkMessagesList);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        ListView vkMessagesList = (ListView) vkMessagesView.findViewById(R.id.vkMessagesList);
         getVKMessageHistory(vkMessagesList);
-
-        Button sendMessageBtn = (Button) findViewById(R.id.vkSendMessageBtn);
+        Button sendMessageBtn = (Button) vkMessagesView.findViewById(R.id.vkSendMessageBtn);
         sendMessageBtn.setOnClickListener(sendButtonClickListener);
-
-        VKLongPollService.startActionUpdateMessages(VKMessagesActivity.this, userId);
+        super.onViewCreated(view, savedInstanceState);
     }
 
     private void getVKMessageHistory(final ListView messagesListView) {
@@ -90,7 +91,7 @@ public class VKMessagesActivity extends AppCompatActivity {
                     messages.add(new VKMessage(message.body, message.out));
                 }
 
-                messagesAdapter = new VKMessagesAdapter(VKMessagesActivity.this, messages);
+                messagesAdapter = new VKMessagesAdapter(getActivity(), messages);
 
                 messagesListView.setAdapter(messagesAdapter);
             }
@@ -100,7 +101,7 @@ public class VKMessagesActivity extends AppCompatActivity {
     View.OnClickListener sendButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String messageText = ((EditText) findViewById(R.id.vkSendMessageInput)).getText().toString();
+            String messageText = ((EditText) vkMessagesView.findViewById(R.id.vkSendMessageInput)).getText().toString();
             sendVKMessage(messageText);
         }
     };
@@ -119,7 +120,7 @@ public class VKMessagesActivity extends AppCompatActivity {
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
 
-                EditText messageInput = (EditText) findViewById(R.id.vkSendMessageInput);
+                EditText messageInput = (EditText) vkMessagesView.findViewById(R.id.vkSendMessageInput);
                 messageInput.setText("");
 
                 Log.d(TAG, "Message send to user" + userId);
