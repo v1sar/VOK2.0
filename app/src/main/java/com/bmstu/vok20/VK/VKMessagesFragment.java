@@ -134,8 +134,8 @@ public class VKMessagesFragment extends Fragment {
                         VKMessage vkMessage = new VKMessage(
                                 message.user_id, message.out, message.body, message.date
                         );
-                        vkMessageDao.create(vkMessage);
                         messages.add(vkMessage);
+                        vkMessageDao.create(vkMessage);
                     } catch (SQLException e) {
                         Log.e(TAG, "Cannot add messages to DB to user: " + userId, e);
                     }
