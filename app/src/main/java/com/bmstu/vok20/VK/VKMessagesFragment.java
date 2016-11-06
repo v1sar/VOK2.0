@@ -74,9 +74,9 @@ public class VKMessagesFragment extends Fragment {
         sendVkMessageBtn = (Button) vkMessagesView.findViewById(R.id.vkSendMessageBtn);
 
         if (Utils.isOnline(getActivity())) {
-            getVKMessageHistoryDB();
-        } else {
             getVKMessageHistory();
+        } else {
+            getVKMessageHistoryDB();
         }
 
         sendVkMessageBtn.setOnClickListener(sendButtonClickListener);
