@@ -98,17 +98,19 @@ public class VKDialogsAdapter extends BaseAdapter {
 
     private void showVKMessagesFragment(int id) {
         Bundle bundle = new Bundle();
-        bundle.putInt("id", id);
-        FragmentManager fM = ((AppCompatActivity) context).getSupportFragmentManager();
-        FragmentTransaction transaction = fM.beginTransaction();
-        Fragment f = new VKMessagesFragment();
-        f.setArguments(bundle);
-        Fragment dialogs = fM.findFragmentById(R.id.content_main);
-        if (dialogs != null && dialogs.isAdded())
-        {
+        bundle.putInt("user_id", id);
+
+        FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        Fragment fragment = new VKMessagesFragment();
+        fragment.setArguments(bundle);
+
+        Fragment dialogs = fragmentManager.findFragmentById(R.id.content_main);
+        if (dialogs != null && dialogs.isAdded()) {
             transaction.remove(dialogs);
         }
-        transaction.replace(R.id.content_main, f);
+
+        transaction.replace(R.id.content_main, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -144,18 +146,21 @@ public class VKDialogsAdapter extends BaseAdapter {
                 .append(R.string.app_name);
 
         File appDir = new File(appDirPath.toString());
+        Log.d(TAG, "App dir: " + appDir.toString());
 
         if (!appDir.exists()) {
-            appDir.mkdir();
+            appDir.mkdirs();
         }
 
         StringBuilder imagePath = new StringBuilder();
 
         imagePath
-                .append(appDirPath.toString())
+                .append(appDir.toString())
                 .append(File.separator)
                 .append(userId)
                 .append(".jpg");
+
+        Log.d(TAG, "Image path: " + imagePath.toString());
 
         return imagePath.toString();
     }

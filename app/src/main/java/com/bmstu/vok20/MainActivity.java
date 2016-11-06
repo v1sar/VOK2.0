@@ -1,11 +1,14 @@
 package com.bmstu.vok20;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,9 +27,13 @@ import com.vk.sdk.util.VKUtil;
 
 import java.util.Arrays;
 
+import android.Manifest;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private final static String TAG = MainActivity.class.getSimpleName();
+
+    private static final int REQUEST_WRITE_STORAGE = 112;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +57,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final String FLURRY_KEY = "P5J926ZM3YPF4WTPRPVY";
         FlurryAgent.init(MainActivity.this, FLURRY_KEY);
         /*** ***/
+
+        /*** Get external storage permissions ***/
+        boolean hasPermission = (
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED);
+        if (!hasPermission) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_STORAGE
+            );
+        }
     }
 
     @Override
