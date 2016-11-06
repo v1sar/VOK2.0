@@ -35,6 +35,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.bmstu.vok20.VK.VKLongPollService.startActionUpdateMessages;
+
 /**
  * Created by anthony on 02.11.16.
  */
@@ -188,6 +190,8 @@ public class VKDialogsFragment extends Fragment {
 
                         vkDialogsAdapter = new VKDialogsAdapter(getActivity(), dialogs);
                         vkDialogsListView.setAdapter(vkDialogsAdapter);
+                        VKLongPollService vkLongPollService = new VKLongPollService();
+                        vkLongPollService.startActionUpdateMessages(getActivity(), 1);
                     }
                 });
             }
