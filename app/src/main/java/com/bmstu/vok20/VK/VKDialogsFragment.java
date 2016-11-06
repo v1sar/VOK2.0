@@ -10,8 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.bmstu.vok20.DatabaseHelper;
 import com.bmstu.vok20.R;
 import com.bmstu.vok20.Utils;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
@@ -26,7 +31,9 @@ import com.vk.sdk.api.model.VKList;
 
 import org.json.JSONException;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by anthony on 02.11.16.
@@ -34,9 +41,13 @@ import java.util.ArrayList;
 
 public class VKDialogsFragment extends Fragment {
     private final static String TAG = VKDialogsFragment.class.getSimpleName();
-    private final static int DIALOG_COUNT = 15;
+
+    private final static int DIALOGS_COUNT = 20;
 
     private String[] scope;
+
+    private DatabaseHelper databaseHelper;
+
     private View vkDialogsView;
     private ListView vkDialogsListView;
     private VKDialogsAdapter vkDialogsAdapter;
@@ -57,16 +68,15 @@ public class VKDialogsFragment extends Fragment {
 
         vkDialogsListView = (ListView) vkDialogsView.findViewById(R.id.vkDialogList);
 
-//      TODO:
-//      if (!Utils.isOnline(getActivity()) {
-//          getVKDialogsDB();
-//      } else {
+        if (!Utils.isOnline(getActivity())) {
+            getVKDialogsFromDB();
+        } else {
             if (VKSdk.isLoggedIn()) {
                 getVKDialogs();
             } else {
                 VKSdk.login(getActivity(), scope);
             }
-//      }
+        }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -74,12 +84,31 @@ public class VKDialogsFragment extends Fragment {
         getVKDialogs();
     }
 
-    private void getVKDialogs() {
-        VKRequest dialogsRequest = VKApi.messages().getDialogs(
-                VKParameters.from(VKApiConst.COUNT, DIALOG_COUNT)
-        );
+    public void getVKDialogsFromDB() {
+        ArrayList<VKDialog> dialogs = new ArrayList<>();
 
+        try {
+            Dao<VKDialog, Integer> vkDialogDao = getHelper().getVkDialogDao();
+
+//            QueryBuilder<VKDialog, Integer> queryBuilder = vkDialogDao.queryBuilder();
+            List<VKDialog> vkDialogList = vkDialogDao.queryForAll();
+            for (VKDialog dialog : vkDialogList) {
+                dialogs.add(dialog);
+            }
+        } catch (SQLException e) {
+            Log.e(TAG, "Cannot read dialogs from DB", e);
+        }
+
+        vkDialogsAdapter = new VKDialogsAdapter(getActivity(), dialogs);
+        vkDialogsListView.setAdapter(vkDialogsAdapter);
+    }
+
+    private void getVKDialogs() {
         final ArrayList<VKDialog> dialogs = new ArrayList<>();
+
+        VKRequest dialogsRequest = VKApi.messages().getDialogs(
+                VKParameters.from(VKApiConst.COUNT, DIALOGS_COUNT)
+        );
 
         dialogsRequest.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
@@ -114,6 +143,15 @@ public class VKDialogsFragment extends Fragment {
                     public void onComplete(VKResponse response) {
                         super.onComplete(response);
 
+                        // Удаляем старые диалоги
+                        try {
+                            Dao<VKDialog, Integer> vkDialogDao = getHelper().getVkDialogDao();
+                            DeleteBuilder<VKDialog, Integer> deleteBuilder = vkDialogDao.deleteBuilder();
+                            deleteBuilder.delete();
+                        } catch (SQLException e) {
+                            Log.e(TAG, "Cannot delete dialogs from DB", e);
+                        }
+
                         VKList users = (VKList) response.parsedModel;
                         VKApiModel user;
                         for (VKDialog dialog : dialogs) {
@@ -137,7 +175,16 @@ public class VKDialogsFragment extends Fragment {
                                 // e.printStackTrace();
                                 Log.w(TAG, "Photo missing, user" + dialog.getUserId());
                             }
-                        }
+
+                            // TODO: Обновляем текущие, а не удалить-добавитьзаного
+                            // Добавляем новые диалоги
+                            try {
+                                Dao<VKDialog, Integer> vkDialogDao = getHelper().getVkDialogDao();
+                                vkDialogDao.create(dialog);
+                            } catch (SQLException e) {
+                                Log.e(TAG, "Cannot add dialog to DB to user: " + dialog.getUserId(), e);
+                            }
+                        }   // for (VKDialog dialog : dialogs)
 
                         vkDialogsAdapter = new VKDialogsAdapter(getActivity(), dialogs);
                         vkDialogsListView.setAdapter(vkDialogsAdapter);
@@ -145,5 +192,13 @@ public class VKDialogsFragment extends Fragment {
                 });
             }
         });
+    }   // getVKDialogs()
+
+    private DatabaseHelper getHelper() {
+        if (databaseHelper == null) {
+            databaseHelper =
+                    OpenHelperManager.getHelper(getActivity(), DatabaseHelper.class);
+        }
+        return databaseHelper;
     }
 }

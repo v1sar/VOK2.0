@@ -24,13 +24,13 @@ public class VKDialog {
     @DatabaseField(generatedId = true)
     private static long id;
 
-    @DatabaseField(canBeNull = false, dataType = DataType.LONG, columnName = VK_DIALOG_USER_ID_FIELD_NAME)
+    @DatabaseField(canBeNull = false, dataType = DataType.INTEGER, columnName = VK_DIALOG_USER_ID_FIELD_NAME)
     private int userId;
 
     @DatabaseField(canBeNull = false, dataType = DataType.STRING, columnName = VK_DIALOG_TITLE_FIELD_NAME)
     private String title;
 
-    @DatabaseField(dataType = DataType.LONG, columnName = VK_DIALOG_UNREAD_FIELD_NAME, defaultValue = VK_DIALOG_UNREAD_FIELD_DEFAULT_VALUE)
+    @DatabaseField(dataType = DataType.INTEGER, columnName = VK_DIALOG_UNREAD_FIELD_NAME, defaultValue = VK_DIALOG_UNREAD_FIELD_DEFAULT_VALUE)
     private int unread;
 
     @DatabaseField(dataType = DataType.STRING, columnName = VK_DIALOG_AVATAR_URL_FIELD_NAME, defaultValue = VK_DIALOG_AVATAR_PATH_FIELD_DEFAULT_VALUE)

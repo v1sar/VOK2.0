@@ -54,7 +54,7 @@ public class VKMessagesFragment extends Fragment {
     private View vkMessagesView;
     private ListView vkMessagesListView;
     private VKMessagesAdapter vkMessagesAdapter;
-    private ArrayList<VKMessage> messages = new ArrayList<VKMessage>();
+    private ArrayList<VKMessage> messages = new ArrayList<>();
 
     private Button sendVkMessageBtn;
 
@@ -67,6 +67,15 @@ public class VKMessagesFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (databaseHelper != null) {
+            OpenHelperManager.releaseHelper();
+            databaseHelper = null;
+        }
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -76,13 +85,13 @@ public class VKMessagesFragment extends Fragment {
         if (Utils.isOnline(getActivity())) {
             getVKMessageHistory();
         } else {
-            getVKMessageHistoryDB();
+            getVKMessageHistoryFromDB();
         }
 
         sendVkMessageBtn.setOnClickListener(sendButtonClickListener);
     }
 
-    private void getVKMessageHistoryDB() {
+    private void getVKMessageHistoryFromDB() {
         try {
             Dao<VKMessage, Integer> vkMessageDao = getHelper().getVkMessageDao();
 
@@ -214,20 +223,11 @@ public class VKMessagesFragment extends Fragment {
         });
     }   // sendVKMessage
 
-    protected DatabaseHelper getHelper() {
+    private DatabaseHelper getHelper() {
         if (databaseHelper == null) {
             databaseHelper =
                     OpenHelperManager.getHelper(getActivity(), DatabaseHelper.class);
         }
         return databaseHelper;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (databaseHelper != null) {
-            OpenHelperManager.releaseHelper();
-            databaseHelper = null;
-        }
     }
 }
