@@ -208,10 +208,8 @@ public class VKMessagesFragment extends Fragment {
 
                 EditText messageInput = (EditText) vkMessagesView.findViewById(R.id.vkSendMessageInput);
                 messageInput.setText("");
-
-                //messages.add(new VKMessage(messageText, true));
-                //vkMessagesAdapter.updateList(messages);
-
+                messages.add(new VKMessage(messageText, true));
+                vkMessagesAdapter.updateList(messages);
                 Log.d(TAG, "Message send to user" + userId);
             }
 

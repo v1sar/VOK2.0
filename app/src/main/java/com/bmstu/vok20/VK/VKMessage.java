@@ -40,6 +40,11 @@ public class VKMessage {
         this.timestamp = timestamp;
     }
 
+    public VKMessage(String body, boolean isOut) {
+        this.body = body;
+        this.isOut = isOut;
+    }
+
     public static long getId() {
         return id;
     }
