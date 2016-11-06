@@ -34,6 +34,12 @@ public class VKLongPollService extends IntentService {
     private static final String VK_PARAM_ONLINES = "onlines";
     private static final String VK_PARAM_MAX_MSG_ID = "max_msg_id";
 
+    //key= 450299e379b867ebac3825cd3f0c1e5345cef2c8, server= imv4.vk.com/im0871, ts= 1642369698, pts= 1392674
+    String key;// = "450299e379b867ebac3825cd3f0c1e5345cef2c8";
+    String server;// = "imv4.vk.com/im0871";
+    int ts;// = 1642369786;//;1642369698;
+    int pts;// = 1392674;
+
     public VKLongPollService() {
         super("VKLongPollService");
     }
@@ -53,7 +59,7 @@ public class VKLongPollService extends IntentService {
             switch (action) {
                 case ACTION_UPDATE_MESSAGES: {
                     Log.d(TAG, "ACTION_UPDATE_MESSAGES");
-                 //   int userId = intent.getIntExtra(USER_ID_PARAM, 0);
+                    int userId = intent.getIntExtra(USER_ID_PARAM, 0);
                     handleActionUpdateMessages();
                     break;
                 }
@@ -62,7 +68,7 @@ public class VKLongPollService extends IntentService {
     }
 
     private void handleActionUpdateMessages() {
-        VKRequest getLongPollServerRequest = new VKRequest(
+        final VKRequest getLongPollServerRequest = new VKRequest(
                 VK_MESSAGES_GET_LONG_POLL_SERVER_METHOD,
                 VKParameters.from(
                         VK_PARAM_USE_SSL, 0,
@@ -75,11 +81,6 @@ public class VKLongPollService extends IntentService {
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
 
-                String key = "";
-                String server = "";
-                int ts = 0;
-                int pts = 0;
-
                 try {
                     JSONObject responseJSON = response.json.getJSONObject("response");
                     key = responseJSON.getString("key");
@@ -88,10 +89,10 @@ public class VKLongPollService extends IntentService {
                     pts = responseJSON.getInt("pts");
 
                     StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append("key= "+key)
-                    .append(", server= " + server)
-                    .append(", ts= " + ts)
-                    .append(", pts= " + pts);
+                    stringBuilder.append("key= " + key)
+                            .append(", server= " + server)
+                            .append(", ts= " + ts)
+                            .append(", pts= " + pts);
                     Log.d(TAG, stringBuilder.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -99,15 +100,10 @@ public class VKLongPollService extends IntentService {
 
                 VKRequest getLongPollHistoryRequest = new VKRequest(
                         VK_MESSAGES_GET_LONG_POLL_HISTORY_METHOD,
-                        VKParameters.from("server", server,
-                                "key", key,
-                                VK_PARAM_TS, ts,
-                                "pts", pts,
-                                "wait", 10,
-                                "mode", 2)
+                        VKParameters.from(VK_PARAM_TS, ts)
                 );
 
-                getLongPollHistoryRequest.executeSyncWithListener(new VKRequest.VKRequestListener() {
+                getLongPollHistoryRequest.executeWithListener(new VKRequest.VKRequestListener() {
                     @Override
                     public void onComplete(VKResponse response) {
                         super.onComplete(response);
@@ -128,6 +124,8 @@ public class VKLongPollService extends IntentService {
 
                 });
             }
-        });     // getLongPollServerRequest.execute
-    }
+        });
+    }// getLongPollServerRequest.execute
+
+
 }

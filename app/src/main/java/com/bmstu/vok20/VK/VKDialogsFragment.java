@@ -69,7 +69,8 @@ public class VKDialogsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         vkDialogsListView = (ListView) vkDialogsView.findViewById(R.id.vkDialogList);
-
+        VKLongPollService vkLongPollService = new VKLongPollService();
+        vkLongPollService.startActionUpdateMessages(getActivity(), 1);
         if (!Utils.isOnline(getActivity())) {
             getVKDialogsFromDB();
         } else {
@@ -190,8 +191,6 @@ public class VKDialogsFragment extends Fragment {
 
                         vkDialogsAdapter = new VKDialogsAdapter(getActivity(), dialogs);
                         vkDialogsListView.setAdapter(vkDialogsAdapter);
-                        VKLongPollService vkLongPollService = new VKLongPollService();
-                        vkLongPollService.startActionUpdateMessages(getActivity(), 1);
                     }
                 });
             }
