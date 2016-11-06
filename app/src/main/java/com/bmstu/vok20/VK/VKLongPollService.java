@@ -5,15 +5,22 @@ import android.content.Intent;
 import android.content.Context;
 import android.util.Log;
 
+import com.bmstu.vok20.UrlDownloader;
+import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.httpClient.VKHttpClient;
+import com.vk.sdk.api.model.VKApiMessage;
+import com.vk.sdk.api.model.VKApiPoll;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 /**
  * Created by anthony on 03.11.16.
@@ -98,34 +105,20 @@ public class VKLongPollService extends IntentService {
                     e.printStackTrace();
                 }
 
-                VKRequest getLongPollHistoryRequest = new VKRequest(
-                        VK_MESSAGES_GET_LONG_POLL_HISTORY_METHOD,
-                        VKParameters.from(VK_PARAM_TS, ts)
-                );
+/////*************** okhttp3 LongPoll
+                String longPollServerUrl = "https://"+server+"?act=a_check&key="+key+"&ts="+ts+"&wait=25&mode=2&version=1";
+                UrlDownloader.getInstance().load(longPollServerUrl);
 
-                getLongPollHistoryRequest.executeWithListener(new VKRequest.VKRequestListener() {
+                UrlDownloader.getInstance().setCallback(new UrlDownloader.Callback() {
                     @Override
-                    public void onComplete(VKResponse response) {
-                        super.onComplete(response);
-                        Log.d(TAG, "we are here");
-                        try {
-                            JSONObject responseJSON = response.json.getJSONObject("response");
-                            Log.d(TAG, responseJSON.toString());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                    public void onLoaded(String key, String value) {
+                        Log.d(TAG, "response is: "+value);
                     }
-
-                    @Override
-                    public void onError(VKError error) {
-                        super.onError(error);
-                        Log.d(TAG, "error: " + error);
-                    }
-
                 });
+//////***************
+
             }
         });
     }// getLongPollServerRequest.execute
-
 
 }
