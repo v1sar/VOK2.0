@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.bmstu.vok20.R;
+import com.bmstu.vok20.Utils;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
@@ -37,7 +38,8 @@ public class VKDialogsFragment extends Fragment {
 
     private String[] scope;
     private View vkDialogsView;
-    private VKDialogsAdapter dialogsAdapter;
+    private ListView vkDialogsListView;
+    private VKDialogsAdapter vkDialogsAdapter;
 
     public VKDialogsFragment() {
         scope = new String[]{VKScope.MESSAGES};
@@ -52,16 +54,27 @@ public class VKDialogsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        VKSdk.login(getActivity(), scope);
+
+        vkDialogsListView = (ListView) vkDialogsView.findViewById(R.id.vkDialogList);
+
+//      TODO:
+//      if (!Utils.isOnline(getActivity()) {
+//          getVKDialogsDB();
+//      } else {
+            if (VKSdk.isLoggedIn()) {
+                getVKDialogs();
+            } else {
+                VKSdk.login(getActivity(), scope);
+            }
+//      }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "VK Login");
-        ListView dialogList = (ListView) vkDialogsView.findViewById(R.id.vkDialogList);
-        getVKDialogs(dialogList);
+        getVKDialogs();
     }
 
-    private void getVKDialogs(final ListView dialogListView) {
+    private void getVKDialogs() {
         VKRequest dialogsRequest = VKApi.messages().getDialogs(
                 VKParameters.from(VKApiConst.COUNT, DIALOG_COUNT)
         );
@@ -124,8 +137,8 @@ public class VKDialogsFragment extends Fragment {
                             }
                         }
 
-                        dialogsAdapter = new VKDialogsAdapter(getActivity(), dialogs);
-                        dialogListView.setAdapter(dialogsAdapter);
+                        vkDialogsAdapter = new VKDialogsAdapter(getActivity(), dialogs);
+                        vkDialogsListView.setAdapter(vkDialogsAdapter);
                     }
                 });
             }
