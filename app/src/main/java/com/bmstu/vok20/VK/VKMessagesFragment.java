@@ -87,7 +87,7 @@ public class VKMessagesFragment extends Fragment {
             Dao<VKMessage, Integer> vkMessageDao = getHelper().getVkMessageDao();
 
             QueryBuilder<VKMessage, Integer> queryBuilder = vkMessageDao.queryBuilder();
-            queryBuilder.where().eq(VKMessage.VK_MESSAGE_SENDER_ID_FIELD_NAME, userId);
+            queryBuilder.where().eq(VKMessage.VK_MESSAGE_USER_ID_FIELD_NAME, userId);
             queryBuilder.orderBy(VKMessage.VK_MESSAGE_TIMESTAMP_FIELD_NAME, true);
             List<VKMessage> vkMessageList = queryBuilder.query();
             for (VKMessage message : vkMessageList) {
@@ -153,7 +153,7 @@ public class VKMessagesFragment extends Fragment {
                         QueryBuilder<VKMessage, Integer> queryBuilder = vkMessageDao.queryBuilder();
                         queryBuilder.setCountOf(true);
                         queryBuilder.setWhere(queryBuilder.where().eq(
-                                VKMessage.VK_MESSAGE_SENDER_ID_FIELD_NAME, userId
+                                VKMessage.VK_MESSAGE_USER_ID_FIELD_NAME, userId
                         ));
                         long existMessagesCount = vkMessageDao.countOf(queryBuilder.prepare());
 
@@ -161,7 +161,7 @@ public class VKMessagesFragment extends Fragment {
                             DeleteBuilder<VKMessage, Integer> deleteBuilder = vkMessageDao.deleteBuilder();
                             deleteBuilder
                                     .where()
-                                    .eq(VKMessage.VK_MESSAGE_SENDER_ID_FIELD_NAME, userId);
+                                    .eq(VKMessage.VK_MESSAGE_USER_ID_FIELD_NAME, userId);
 
                             // TODO: limit = existMessagesCount - MESSAGES
                             // TODO: orderBy timestamp
