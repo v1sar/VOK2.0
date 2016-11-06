@@ -19,20 +19,19 @@ public class VKMessage {
     @DatabaseField(generatedId = true)
     private static long id;
 
-    @DatabaseField(canBeNull = false, dataType = DataType.INTEGER, columnName = VK_MESSAGE_SENDER_ID_FIELD_NAME)
+    @DatabaseField(uniqueIndexName = "sender_body_ts_index", canBeNull = false, dataType = DataType.INTEGER, columnName = VK_MESSAGE_SENDER_ID_FIELD_NAME)
     private int senderId;
 
     @DatabaseField(canBeNull = false, dataType = DataType.BOOLEAN, columnName = VK_MESSAGE_IS_OUT_FIELD_NAME)
     private boolean isOut;
 
-    @DatabaseField(canBeNull = false, dataType = DataType.STRING, columnName = VK_MESSAGE_BODY_FIELD_NAME)
+    @DatabaseField(uniqueIndexName = "sender_body_ts_index", canBeNull = false, dataType = DataType.STRING, columnName = VK_MESSAGE_BODY_FIELD_NAME)
     private String body;
 
-    @DatabaseField(canBeNull = false, dataType = DataType.LONG, columnName = VK_MESSAGE_TIMESTAMP_FIELD_NAME)
+    @DatabaseField(uniqueIndexName = "sender_body_ts_index", canBeNull = false, dataType = DataType.LONG, columnName = VK_MESSAGE_TIMESTAMP_FIELD_NAME)
     private long timestamp;
 
     public VKMessage() {}
-
 
     public VKMessage(int senderId, boolean isOut, String body, long timestamp) {
         this.senderId = senderId;
@@ -79,12 +78,12 @@ public class VKMessage {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("id=").append(id);
-        sb.append(", ").append("senderId=").append(senderId);
-        sb.append(", ").append("isOut=").append(isOut);
-        sb.append(", ").append("body=").append(body);
-        sb.append(", ").append("timestamp=").append(timestamp);
-        return sb.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("id=").append(id);
+        stringBuilder.append(", ").append("senderId=").append(senderId);
+        stringBuilder.append(", ").append("isOut=").append(isOut);
+        stringBuilder.append(", ").append("body=").append(body);
+        stringBuilder.append(", ").append("timestamp=").append(timestamp);
+        return stringBuilder.toString();
     }
 }

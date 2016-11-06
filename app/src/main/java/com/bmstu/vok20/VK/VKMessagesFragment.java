@@ -13,13 +13,11 @@ import android.widget.ListView;
 
 import com.bmstu.vok20.DatabaseHelper;
 import com.bmstu.vok20.R;
+import com.bmstu.vok20.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.vk.sdk.VKScope;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKParameters;
@@ -49,30 +47,61 @@ public class VKMessagesFragment extends Fragment {
     private static final int MESSAGES_COUNT = 30;
     private static final int MESSAGES_REVERSE = 0;
 
-    private DatabaseHelper databaseHelper;
     private int userId;
+
+    private DatabaseHelper databaseHelper;
+
     private View vkMessagesView;
-    private VKMessagesAdapter messagesAdapter;
+    private ListView vkMessagesListView;
+    private VKMessagesAdapter vkMessagesAdapter;
     private ArrayList<VKMessage> messages = new ArrayList<VKMessage>();
+
+    private Button sendVkMessageBtn;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         vkMessagesView = inflater.inflate(R.layout.vk_messages_fragment, container, false);
-        userId = getArguments().getInt("id");
+        userId = getArguments().getInt("user_id");
         return vkMessagesView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        ListView vkMessagesList = (ListView) vkMessagesView.findViewById(R.id.vkMessagesList);
-        getVKMessageHistory(vkMessagesList);
-        Button sendMessageBtn = (Button) vkMessagesView.findViewById(R.id.vkSendMessageBtn);
-        sendMessageBtn.setOnClickListener(sendButtonClickListener);
         super.onViewCreated(view, savedInstanceState);
+
+        vkMessagesListView = (ListView) vkMessagesView.findViewById(R.id.vkMessagesList);
+        sendVkMessageBtn = (Button) vkMessagesView.findViewById(R.id.vkSendMessageBtn);
+
+        if (Utils.isOnline(getActivity())) {
+            getVKMessageHistoryDB();
+        } else {
+            getVKMessageHistory();
+        }
+
+        sendVkMessageBtn.setOnClickListener(sendButtonClickListener);
     }
 
-    private void getVKMessageHistory(final ListView messagesListView) {
+    private void getVKMessageHistoryDB() {
+        try {
+            Dao<VKMessage, Integer> vkMessageDao = getHelper().getVkMessageDao();
+
+            QueryBuilder<VKMessage, Integer> queryBuilder = vkMessageDao.queryBuilder();
+            queryBuilder.where().eq(VKMessage.VK_MESSAGE_SENDER_ID_FIELD_NAME, userId);
+            queryBuilder.orderBy(VKMessage.VK_MESSAGE_TIMESTAMP_FIELD_NAME, true);
+            List<VKMessage> vkMessageList = queryBuilder.query();
+            for (VKMessage message : vkMessageList) {
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            Log.e(TAG, "Cannot read messages from DB to user: " + userId, e);
+        }
+
+        vkMessagesAdapter = new VKMessagesAdapter(getActivity(), messages);
+        vkMessagesListView.setAdapter(vkMessagesAdapter);
+    }
+
+    private void getVKMessageHistory() {
         VKRequest messagesRequest = new VKRequest(
                 MESSAGES_GET_HISTORY_METHOD,
                 VKParameters.from(
@@ -97,44 +126,51 @@ public class VKMessagesFragment extends Fragment {
                 }
 
                 Collections.reverse(messageList);
-                //****ТОЛЬКО ПРИ НАЛИЧИИ ИНТЕРНЕТА*****
-                // удаление сообщений из БД
-                try {
-                    Dao<VKMessage, Integer> vkMessageDao = getHelper().getVkMessageDao();
-                    DeleteBuilder<VKMessage, Integer> deleteBuilder = vkMessageDao.deleteBuilder();
-                    deleteBuilder.where().eq(VKMessage.VK_MESSAGE_SENDER_ID_FIELD_NAME, userId);
-                    deleteBuilder.delete();
-                } catch (SQLException e) {
-                    Log.e(TAG, "Cannot delete messages from DB for user: "+userId, e);
-                }
 
-                // добавление сообщений в БД
+                // Добавление сообщений в БД
                 for (VKApiMessage message : messageList) {
                     try {
                         Dao<VKMessage, Integer> vkMessageDao = getHelper().getVkMessageDao();
-                        VKMessage vkMessage = new VKMessage(message.user_id, message.out, message.body, message.date);
+                        VKMessage vkMessage = new VKMessage(
+                                message.user_id, message.out, message.body, message.date
+                        );
                         vkMessageDao.create(vkMessage);
+                        messages.add(vkMessage);
                     } catch (SQLException e) {
-                        Log.e(TAG, "Cannot add messages to DB to user: "+userId, e);
+                        Log.e(TAG, "Cannot add messages to DB to user: " + userId, e);
                     }
                 }
-                // считывание сообщений из БД
-                try {
-                    Dao<VKMessage, Integer> vkMessageDao = getHelper().getVkMessageDao();
-                    QueryBuilder<VKMessage, Integer> queryBuilder = vkMessageDao.queryBuilder();
-                    queryBuilder.where().eq(VKMessage.VK_MESSAGE_SENDER_ID_FIELD_NAME, userId);
-                    queryBuilder.orderBy(VKMessage.VK_MESSAGE_TIMESTAMP_FIELD_NAME, true);
-                    List<VKMessage> vkMessageList = queryBuilder.query();
-                    for (VKMessage message : vkMessageList) {
-                        messages.add(message);
+
+                vkMessagesAdapter = new VKMessagesAdapter(getActivity(), messages);
+                vkMessagesListView.setAdapter(vkMessagesAdapter);
+
+                // TODO: Проверять соединение перед каждым delete()
+                // Удаление сообщений из БД
+                if (Utils.isOnline(getActivity())) {
+                    try {
+                        Dao<VKMessage, Integer> vkMessageDao = getHelper().getVkMessageDao();
+
+                        QueryBuilder<VKMessage, Integer> queryBuilder = vkMessageDao.queryBuilder();
+                        queryBuilder.setCountOf(true);
+                        queryBuilder.setWhere(queryBuilder.where().eq(
+                                VKMessage.VK_MESSAGE_SENDER_ID_FIELD_NAME, userId
+                        ));
+                        long existMessagesCount = vkMessageDao.countOf(queryBuilder.prepare());
+
+                        if (existMessagesCount > MESSAGES_COUNT) {
+                            DeleteBuilder<VKMessage, Integer> deleteBuilder = vkMessageDao.deleteBuilder();
+                            deleteBuilder
+                                    .where()
+                                    .eq(VKMessage.VK_MESSAGE_SENDER_ID_FIELD_NAME, userId);
+
+                            // TODO: limit = existMessagesCount - MESSAGES
+                            // TODO: orderBy timestamp
+                            // deleteBuilder.delete();
+                        }
+                    } catch (SQLException e) {
+                        Log.e(TAG, "Cannot delete messages from DB for user: "+userId, e);
                     }
-                } catch (SQLException e) {
-                    Log.e(TAG, "Cannot read messages from DB to user: "+userId, e);
                 }
-
-                messagesAdapter = new VKMessagesAdapter(getActivity(), messages);
-
-                messagesListView.setAdapter(messagesAdapter);
             }
         });
     }
@@ -165,7 +201,7 @@ public class VKMessagesFragment extends Fragment {
                 messageInput.setText("");
 
                 //messages.add(new VKMessage(messageText, true));
-                //messagesAdapter.updateList(messages);
+                //vkMessagesAdapter.updateList(messages);
 
                 Log.d(TAG, "Message send to user" + userId);
             }
