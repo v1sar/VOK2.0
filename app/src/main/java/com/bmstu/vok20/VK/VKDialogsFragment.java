@@ -93,7 +93,9 @@ public class VKDialogsFragment extends Fragment {
                 int userId;
                 for (VKApiDialog dialog : dialogList) {
                     userId = dialog.message.user_id;
-                    dialogs.add(new VKDialog(userId, dialog.message.title, dialog.message.body));
+                    dialogs.add(new VKDialog(
+                        userId, dialog.message.title, dialog.unread, dialog.message.body, dialog.message.date
+                    ));
                     userIdsBuilder.append(String.valueOf(userId));
                     userIdsBuilder.append(", ");
                 }

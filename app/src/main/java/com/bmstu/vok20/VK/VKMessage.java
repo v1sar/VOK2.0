@@ -19,8 +19,8 @@ public class VKMessage {
     @DatabaseField(generatedId = true)
     private static long id;
 
-    @DatabaseField(uniqueIndexName = "user_body_ts_index", canBeNull = false, dataType = DataType.LONG, columnName = VK_MESSAGE_USER_ID_FIELD_NAME)
-    private long userId;
+    @DatabaseField(uniqueIndexName = "user_body_ts_index", canBeNull = false, dataType = DataType.INTEGER, columnName = VK_MESSAGE_USER_ID_FIELD_NAME)
+    private int userId;
 
     @DatabaseField(canBeNull = false, dataType = DataType.BOOLEAN, columnName = VK_MESSAGE_IS_OUT_FIELD_NAME)
     private boolean isOut;
@@ -33,7 +33,7 @@ public class VKMessage {
 
     public VKMessage() {}
 
-    public VKMessage(long userId, boolean isOut, String body, long timestamp) {
+    public VKMessage(int userId, boolean isOut, String body, long timestamp) {
         this.userId = userId;
         this.isOut = isOut;
         this.body = body;
@@ -44,7 +44,7 @@ public class VKMessage {
         return id;
     }
 
-    public long getUserId() {
+    public int getUserId() {
         return userId;
     }
 

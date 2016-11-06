@@ -14,7 +14,7 @@ public class VKDialog {
     public static final String VK_DIALOG_USER_ID_FIELD_NAME = "user_id";
     public static final String VK_DIALOG_TITLE_FIELD_NAME = "title";
     public static final String VK_DIALOG_UNREAD_FIELD_NAME = "unread";
-    public static final String VK_DIALOG_AVATAR_PATH_FIELD_NAME = "avatar_path";
+    public static final String VK_DIALOG_AVATAR_URL_FIELD_NAME = "avatar_url";
     public static final String VK_DIALOG_LAST_MESSAGE_BODY_FIELD_NAME = "last_message_body";
     public static final String VK_DIALOG_LAST_MESSAGE_TIMESTAMP_FIELD_NAME = "last_message_ts";
 
@@ -25,16 +25,16 @@ public class VKDialog {
     private static long id;
 
     @DatabaseField(canBeNull = false, dataType = DataType.LONG, columnName = VK_DIALOG_USER_ID_FIELD_NAME)
-    private long userId;
+    private int userId;
 
     @DatabaseField(canBeNull = false, dataType = DataType.STRING, columnName = VK_DIALOG_TITLE_FIELD_NAME)
     private String title;
 
     @DatabaseField(dataType = DataType.LONG, columnName = VK_DIALOG_UNREAD_FIELD_NAME, defaultValue = VK_DIALOG_UNREAD_FIELD_DEFAULT_VALUE)
-    private long unread;
+    private int unread;
 
-    @DatabaseField(dataType = DataType.STRING, columnName = VK_DIALOG_AVATAR_PATH_FIELD_NAME, defaultValue = VK_DIALOG_AVATAR_PATH_FIELD_DEFAULT_VALUE)
-    private String avatarPath;
+    @DatabaseField(dataType = DataType.STRING, columnName = VK_DIALOG_AVATAR_URL_FIELD_NAME, defaultValue = VK_DIALOG_AVATAR_PATH_FIELD_DEFAULT_VALUE)
+    private String avatarUrl;
 
     @DatabaseField(canBeNull = false, dataType = DataType.STRING, columnName = VK_DIALOG_LAST_MESSAGE_BODY_FIELD_NAME)
     private String lastMessageBody;
@@ -44,21 +44,21 @@ public class VKDialog {
 
     public VKDialog() {}
 
-    public VKDialog(long userId, String title, long unread, String avatarPath,
+    public VKDialog(int userId, String title, int unread,
                     String lastMessageBody, long lastMessageTimestamp) {
         this.userId = userId;
         this.title = title;
         this.unread = unread;
-        this.avatarPath = avatarPath;
+        this.avatarUrl = "";
         this.lastMessageBody = lastMessageBody;
         this.lastMessageTimestamp = lastMessageTimestamp;
     }
 
-    public long getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
@@ -70,20 +70,20 @@ public class VKDialog {
         this.title = title;
     }
 
-    public long getUnread() {
+    public int getUnread() {
         return unread;
     }
 
-    public void setUnread(long unread) {
+    public void setUnread(int unread) {
         this.unread = unread;
     }
 
-    public String getAvatarPath() {
-        return avatarPath;
+    public String getAvatarUrl() {
+        return avatarUrl;
     }
 
-    public void setAvatarPath(String avatarPath) {
-        this.avatarPath = avatarPath;
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public String getLastMessageBody() {
