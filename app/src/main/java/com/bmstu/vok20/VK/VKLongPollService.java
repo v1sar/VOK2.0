@@ -3,6 +3,7 @@ package com.bmstu.vok20.VK;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.bmstu.vok20.UrlDownloader;
@@ -17,6 +18,7 @@ import com.vk.sdk.api.httpClient.VKHttpClient;
 import com.vk.sdk.api.model.VKApiMessage;
 import com.vk.sdk.api.model.VKApiPoll;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,11 +43,12 @@ public class VKLongPollService extends IntentService {
     private static final String VK_PARAM_ONLINES = "onlines";
     private static final String VK_PARAM_MAX_MSG_ID = "max_msg_id";
 
-    //key= 450299e379b867ebac3825cd3f0c1e5345cef2c8, server= imv4.vk.com/im0871, ts= 1642369698, pts= 1392674
-    String key;// = "450299e379b867ebac3825cd3f0c1e5345cef2c8";
-    String server;// = "imv4.vk.com/im0871";
-    int ts;// = 1642369786;//;1642369698;
-    int pts;// = 1392674;
+    public static final String VK_NEW_MESSAGE = "vk_new_message";
+
+    String key;
+    String server;
+    int ts;
+    int pts;
 
     public VKLongPollService() {
         super("VKLongPollService");
@@ -94,31 +97,63 @@ public class VKLongPollService extends IntentService {
                     server = responseJSON.getString("server");
                     ts = responseJSON.getInt("ts");
                     pts = responseJSON.getInt("pts");
-
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append("key= " + key)
                             .append(", server= " + server)
                             .append(", ts= " + ts)
                             .append(", pts= " + pts);
                     Log.d(TAG, stringBuilder.toString());
+                    longPollRequester(server, key, ts);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-/////*************** okhttp3 LongPoll
-                String longPollServerUrl = "https://"+server+"?act=a_check&key="+key+"&ts="+ts+"&wait=25&mode=2&version=1";
-                UrlDownloader.getInstance().load(longPollServerUrl);
-
-                UrlDownloader.getInstance().setCallback(new UrlDownloader.Callback() {
-                    @Override
-                    public void onLoaded(String key, String value) {
-                        Log.d(TAG, "response is: "+value);
-                    }
-                });
-//////***************
-
             }
         });
     }// getLongPollServerRequest.execute
 
+    /////*************** okhttp3 LongPoll
+    private void longPollRequester(String server, String key, int ts) {
+        String longPollServerUrl = "https://" + server + "?act=a_check&key=" + key + "&ts=" + ts + "&wait=25&mode=2&version=1";
+        UrlDownloader.getInstance().load(longPollServerUrl);
+        UrlDownloader.getInstance().setCallback(new UrlDownloader.Callback() {
+            @Override
+            public void onLoaded(String key, String value) {
+                Log.d(TAG, "response is: " + value);
+                try {
+                    JSONObject longPollResponse = new JSONObject(value);
+                    Log.d(TAG, longPollResponse.toString());
+                    setTs(longPollResponse.getInt("ts"));
+                    JSONArray longPollUpdates = longPollResponse.getJSONArray("updates");
+                    for (int i = 0; i < longPollUpdates.length(); i++) {
+                        if (longPollUpdates.getJSONArray(i).getInt(0) == 4) {
+                            LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(VKLongPollService.this);
+                            broadcastManager.sendBroadcast(new Intent(VK_NEW_MESSAGE));
+                            Log.d(TAG, "NEW MESSAGE" + longPollUpdates.getJSONArray(i).toString());
+                        }
+                    }
+                    longPollRequester(getServer(), getKey(), getTs());
+                } catch (Throwable t) {
+                    Log.e(TAG, "Cannot parse string to JSON: " + value);
+                    longPollRequester(getServer(), getKey(), getTs());
+                }
+            }
+        });
+    }
+    //////***************
+
+    public void setTs(int ts) {
+        this.ts = ts;
+    }
+
+    public int getTs() {
+        return ts;
+    }
+
+    public String getServer() {
+        return server;
+    }
+
+    public String getKey() {
+        return key;
+    }
 }

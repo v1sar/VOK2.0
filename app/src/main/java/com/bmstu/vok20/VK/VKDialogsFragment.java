@@ -1,14 +1,19 @@
 package com.bmstu.vok20.VK;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.bmstu.vok20.DatabaseHelper;
 import com.bmstu.vok20.R;
@@ -69,8 +74,6 @@ public class VKDialogsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         vkDialogsListView = (ListView) vkDialogsView.findViewById(R.id.vkDialogList);
-        VKLongPollService vkLongPollService = new VKLongPollService();
-        vkLongPollService.startActionUpdateMessages(getActivity(), 1);
         if (!Utils.isOnline(getActivity())) {
             getVKDialogsFromDB();
         } else {
@@ -80,6 +83,28 @@ public class VKDialogsFragment extends Fragment {
                 VKSdk.login(getActivity(), scope);
             }
         }
+        VKLongPollService vkLongPollService = new VKLongPollService();
+        vkLongPollService.startActionUpdateMessages(getActivity(), 1);
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(VKLongPollService.VK_NEW_MESSAGE);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(VKLongPollService.VK_NEW_MESSAGE))
+            {
+                Toast.makeText(context, "NEW MESSAGE", Toast.LENGTH_SHORT).show();
+                getVKDialogs();
+            }
+        }
+    };
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(broadcastReceiver);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

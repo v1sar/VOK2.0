@@ -205,7 +205,6 @@ public class VKMessagesFragment extends Fragment {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
-
                 EditText messageInput = (EditText) vkMessagesView.findViewById(R.id.vkSendMessageInput);
                 messageInput.setText("");
                 messages.add(new VKMessage(messageText, true));
