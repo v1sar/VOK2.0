@@ -1,4 +1,4 @@
-package com.bmstu.vok20;
+package com.bmstu.vok20.Helpers;
 
 import android.app.Activity;
 import android.content.Context;

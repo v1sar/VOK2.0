@@ -1,4 +1,4 @@
-package com.bmstu.vok20;
+package com.bmstu.vok20.Helpers;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

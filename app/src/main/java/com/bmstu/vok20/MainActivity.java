@@ -28,9 +28,6 @@ import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
-import com.vk.sdk.util.VKUtil;
-
-import java.util.Arrays;
 
 import android.Manifest;
 import android.widget.Toast;
@@ -150,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
-                case VKLongPollService.VK_NEW_MESSAGE: {
+                case VKLongPollService.ACTION_VK_NEW_MESSAGE: {
                     Toast.makeText(context, "NEW MESSAGE", Toast.LENGTH_SHORT).show();
                 } break;
             }
@@ -158,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         public void register() {
             IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(VKLongPollService.VK_NEW_MESSAGE);
+            intentFilter.addAction(VKLongPollService.ACTION_VK_NEW_MESSAGE);
 
             broadcastManager.registerReceiver(this, intentFilter);
         }

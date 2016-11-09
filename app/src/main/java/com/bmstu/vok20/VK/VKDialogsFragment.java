@@ -10,9 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.bmstu.vok20.DatabaseHelper;
+import com.bmstu.vok20.Helpers.DatabaseHelper;
 import com.bmstu.vok20.R;
-import com.bmstu.vok20.Utils;
+import com.bmstu.vok20.Helpers.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;

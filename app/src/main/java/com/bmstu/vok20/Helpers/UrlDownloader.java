@@ -1,4 +1,4 @@
-package com.bmstu.vok20;
+package com.bmstu.vok20.Helpers;
 
 /**
  * Created by qwerty on 07.11.16.
@@ -59,11 +59,12 @@ public class UrlDownloader {
     }
 
     private String loadInternal(String url) throws IOException {
-        Response response = Http.getClient().newCall(
+        Response response =
+            Http.getClient().newCall(
                 new Request.Builder()
-                        .url(url)
-                        .build()
-        ).execute();
+                            .url(url)
+                            .build()
+            ).execute();
 
         try {
             return response.body().string();
@@ -71,5 +72,4 @@ public class UrlDownloader {
             response.close();
         }
     }
-
 }

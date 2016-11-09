@@ -1,4 +1,4 @@
-package com.bmstu.vok20;
+package com.bmstu.vok20.Helpers;
 
 /**
  * Created by qwerty on 07.11.16.
