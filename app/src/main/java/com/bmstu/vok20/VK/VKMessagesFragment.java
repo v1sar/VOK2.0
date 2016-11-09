@@ -110,7 +110,7 @@ public class VKMessagesFragment extends Fragment {
         vkMessagesListView.setAdapter(vkMessagesAdapter);
     }
 
-    private void getVKMessageHistory() {
+    public void getVKMessageHistory() {
         VKRequest messagesRequest = new VKRequest(
                 MESSAGES_GET_HISTORY_METHOD,
                 VKParameters.from(

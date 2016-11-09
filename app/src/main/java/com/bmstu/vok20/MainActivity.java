@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 
 import com.bmstu.vok20.VK.VKDialogsFragment;
 import com.bmstu.vok20.VK.VKLongPollService;
+import com.bmstu.vok20.VK.VKMessagesFragment;
 import com.flurry.android.FlurryAgent;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
@@ -37,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final static String TAG = MainActivity.class.getSimpleName();
 
     private static final int REQUEST_WRITE_STORAGE = 112;
+
+    public static final String VK_DIALOGS_FRAGMENT_TAG = "VK_DIALOGS_FRAGMENT_TAG";
+    public static final String VK_MESSAGES_FRAGMENT_TAG = "VK_MESSAGES_FRAGMENT_TAG";
 
     private VKActionReceiver vkActionReceiver;
 
@@ -132,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void showVKDialogsFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.content_main, new VKDialogsFragment());
+        transaction.replace(R.id.content_main, new VKDialogsFragment(), VK_DIALOGS_FRAGMENT_TAG);
         transaction.commit();
     }
 
@@ -148,7 +153,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
                 case VKLongPollService.ACTION_VK_NEW_MESSAGE: {
-                    Toast.makeText(context, "NEW MESSAGE", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "New message", Toast.LENGTH_SHORT).show();
+
+                    // TODO: Насколько это законно?
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    Fragment currentFragment = fragmentManager.findFragmentById(R.id.content_main);
+                    switch (currentFragment.getTag()) {
+                        case VK_DIALOGS_FRAGMENT_TAG: {
+                            ((VKDialogsFragment) currentFragment).getVKDialogs();
+                        } break;
+                        case VK_MESSAGES_FRAGMENT_TAG: {
+                            ((VKMessagesFragment) currentFragment).getVKMessageHistory();
+                        } break;
+                    }
                 } break;
             }
         }

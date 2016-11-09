@@ -18,6 +18,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bmstu.vok20.MainActivity;
 import com.bmstu.vok20.R;
 import com.squareup.picasso.Picasso;
 
@@ -132,7 +133,7 @@ public class VKDialogsAdapter extends BaseAdapter {
             transaction.remove(dialogs);
         }
 
-        transaction.replace(R.id.content_main, fragment);
+        transaction.replace(R.id.content_main, fragment, MainActivity.VK_MESSAGES_FRAGMENT_TAG);
         transaction.addToBackStack(null);
         transaction.commit();
     }

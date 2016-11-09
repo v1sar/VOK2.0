@@ -100,7 +100,7 @@ public class VKDialogsFragment extends Fragment {
         vkDialogsListView.setAdapter(vkDialogsAdapter);
     }
 
-    private void getVKDialogs() {
+    public void getVKDialogs() {
         final ArrayList<VKDialog> dialogs = new ArrayList<>();
 
         VKRequest dialogsRequest = VKApi.messages().getDialogs(
