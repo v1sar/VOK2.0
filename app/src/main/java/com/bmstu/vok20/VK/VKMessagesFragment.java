@@ -11,9 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.bmstu.vok20.DatabaseHelper;
+import com.bmstu.vok20.Helpers.DatabaseHelper;
 import com.bmstu.vok20.R;
-import com.bmstu.vok20.Utils;
+import com.bmstu.vok20.Helpers.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
@@ -110,7 +110,7 @@ public class VKMessagesFragment extends Fragment {
         vkMessagesListView.setAdapter(vkMessagesAdapter);
     }
 
-    private void getVKMessageHistory() {
+    public void getVKMessageHistory() {
         VKRequest messagesRequest = new VKRequest(
                 MESSAGES_GET_HISTORY_METHOD,
                 VKParameters.from(
@@ -205,13 +205,10 @@ public class VKMessagesFragment extends Fragment {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
-
                 EditText messageInput = (EditText) vkMessagesView.findViewById(R.id.vkSendMessageInput);
                 messageInput.setText("");
-
-                //messages.add(new VKMessage(messageText, true));
-                //vkMessagesAdapter.updateList(messages);
-
+                messages.add(new VKMessage(messageText, true));
+                vkMessagesAdapter.updateList(messages);
                 Log.d(TAG, "Message send to user" + userId);
             }
 

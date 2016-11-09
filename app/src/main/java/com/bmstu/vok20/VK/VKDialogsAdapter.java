@@ -18,6 +18,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bmstu.vok20.MainActivity;
 import com.bmstu.vok20.R;
 import com.squareup.picasso.Picasso;
 
@@ -76,6 +77,16 @@ public class VKDialogsAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.vkDialogTitle)).setText(dialog.getTitle());
         ((TextView) view.findViewById(R.id.vkDialogLastMessageBody)).setText(dialog.getLastMessageBody());
 
+        TextView unreadView = (TextView) view.findViewById(R.id.vkDialogUnread);
+        int unread = dialog.getUnread();
+
+        if (unread == 0) {
+            unreadView.setVisibility(View.INVISIBLE);
+        } else {
+            unreadView.setText(String.valueOf(unread));
+            unreadView.setVisibility(View.VISIBLE);
+        }
+
         ImageView avatarView = (ImageView) view.findViewById(R.id.vkDialogAvatar);
 
         if (dialog.getAvatarUrl().equals("")) {
@@ -122,7 +133,7 @@ public class VKDialogsAdapter extends BaseAdapter {
             transaction.remove(dialogs);
         }
 
-        transaction.replace(R.id.content_main, fragment);
+        transaction.replace(R.id.content_main, fragment, MainActivity.VK_MESSAGES_FRAGMENT_TAG);
         transaction.addToBackStack(null);
         transaction.commit();
     }

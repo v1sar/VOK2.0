@@ -10,13 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.bmstu.vok20.DatabaseHelper;
+import com.bmstu.vok20.Helpers.DatabaseHelper;
 import com.bmstu.vok20.R;
-import com.bmstu.vok20.Utils;
+import com.bmstu.vok20.Helpers.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
-import com.j256.ormlite.stmt.QueryBuilder;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
@@ -67,7 +66,6 @@ public class VKDialogsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         vkDialogsListView = (ListView) vkDialogsView.findViewById(R.id.vkDialogList);
-
         if (!Utils.isOnline(getActivity())) {
             getVKDialogsFromDB();
         } else {
@@ -90,7 +88,6 @@ public class VKDialogsFragment extends Fragment {
         try {
             Dao<VKDialog, Integer> vkDialogDao = getHelper().getVkDialogDao();
 
-//            QueryBuilder<VKDialog, Integer> queryBuilder = vkDialogDao.queryBuilder();
             List<VKDialog> vkDialogList = vkDialogDao.queryForAll();
             for (VKDialog dialog : vkDialogList) {
                 dialogs.add(dialog);
@@ -103,7 +100,7 @@ public class VKDialogsFragment extends Fragment {
         vkDialogsListView.setAdapter(vkDialogsAdapter);
     }
 
-    private void getVKDialogs() {
+    public void getVKDialogs() {
         final ArrayList<VKDialog> dialogs = new ArrayList<>();
 
         VKRequest dialogsRequest = VKApi.messages().getDialogs(
