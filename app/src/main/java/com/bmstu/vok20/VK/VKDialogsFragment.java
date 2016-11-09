@@ -1,19 +1,14 @@
 package com.bmstu.vok20.VK;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.bmstu.vok20.DatabaseHelper;
 import com.bmstu.vok20.R;
@@ -21,7 +16,6 @@ import com.bmstu.vok20.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
-import com.j256.ormlite.stmt.QueryBuilder;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
@@ -39,8 +33,6 @@ import org.json.JSONException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.bmstu.vok20.VK.VKLongPollService.startActionUpdateMessages;
 
 /**
  * Created by anthony on 02.11.16.
@@ -83,28 +75,6 @@ public class VKDialogsFragment extends Fragment {
                 VKSdk.login(getActivity(), scope);
             }
         }
-        VKLongPollService vkLongPollService = new VKLongPollService();
-        vkLongPollService.startActionUpdateMessages(getActivity(), 1);
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(VKLongPollService.VK_NEW_MESSAGE);
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver, intentFilter);
-    }
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(VKLongPollService.VK_NEW_MESSAGE))
-            {
-                Toast.makeText(context, "NEW MESSAGE", Toast.LENGTH_SHORT).show();
-                getVKDialogs();
-            }
-        }
-    };
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(broadcastReceiver);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -118,7 +88,6 @@ public class VKDialogsFragment extends Fragment {
         try {
             Dao<VKDialog, Integer> vkDialogDao = getHelper().getVkDialogDao();
 
-//            QueryBuilder<VKDialog, Integer> queryBuilder = vkDialogDao.queryBuilder();
             List<VKDialog> vkDialogList = vkDialogDao.queryForAll();
             for (VKDialog dialog : vkDialogList) {
                 dialogs.add(dialog);

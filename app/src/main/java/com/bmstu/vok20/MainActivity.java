@@ -1,6 +1,9 @@
 package com.bmstu.vok20;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,6 +22,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.bmstu.vok20.VK.VKDialogsFragment;
+import com.bmstu.vok20.VK.VKLongPollService;
 import com.flurry.android.FlurryAgent;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
@@ -28,12 +33,15 @@ import com.vk.sdk.util.VKUtil;
 import java.util.Arrays;
 
 import android.Manifest;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private final static String TAG = MainActivity.class.getSimpleName();
 
     private static final int REQUEST_WRITE_STORAGE = 112;
+
+    private VKActionReceiver vkActionReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +77,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     REQUEST_WRITE_STORAGE
             );
         }
+        /*** ***/
+
+        vkActionReceiver = new VKActionReceiver();
+        VKLongPollService.startActionUpdateMessages(MainActivity.this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        vkActionReceiver.register();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        vkActionReceiver.unregister();
     }
 
     @Override
@@ -114,5 +138,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         transaction.replace(R.id.content_main, new VKDialogsFragment());
         transaction.commit();
     }
+
+    private class VKActionReceiver extends BroadcastReceiver {
+        private LocalBroadcastManager broadcastManager;
+
+        public VKActionReceiver() {
+            super();
+            broadcastManager = LocalBroadcastManager.getInstance(MainActivity.this);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case VKLongPollService.VK_NEW_MESSAGE: {
+                    Toast.makeText(context, "NEW MESSAGE", Toast.LENGTH_SHORT).show();
+                } break;
+            }
+        }
+
+        public void register() {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(VKLongPollService.VK_NEW_MESSAGE);
+
+            broadcastManager.registerReceiver(this, intentFilter);
+        }
+
+        public void unregister() {
+            broadcastManager.unregisterReceiver(this);
+        }
+    };
 }
 

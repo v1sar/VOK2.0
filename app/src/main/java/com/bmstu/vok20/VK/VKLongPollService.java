@@ -54,10 +54,9 @@ public class VKLongPollService extends IntentService {
         super("VKLongPollService");
     }
 
-    public static void startActionUpdateMessages(Context context, int userId) {
+    public static void startActionUpdateMessages(Context context) {
         Intent intent = new Intent(context, VKLongPollService.class);
         intent.setAction(ACTION_UPDATE_MESSAGES);
-        intent.putExtra(USER_ID_PARAM, userId);
         Log.d(TAG, "startActionUpdateMessages");
         context.startService(intent);
     }
@@ -69,7 +68,6 @@ public class VKLongPollService extends IntentService {
             switch (action) {
                 case ACTION_UPDATE_MESSAGES: {
                     Log.d(TAG, "ACTION_UPDATE_MESSAGES");
-                    int userId = intent.getIntExtra(USER_ID_PARAM, 0);
                     handleActionUpdateMessages();
                     break;
                 }
