@@ -76,6 +76,16 @@ public class VKDialogsAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.vkDialogTitle)).setText(dialog.getTitle());
         ((TextView) view.findViewById(R.id.vkDialogLastMessageBody)).setText(dialog.getLastMessageBody());
 
+        TextView unreadView = (TextView) view.findViewById(R.id.vkDialogUnread);
+        int unread = dialog.getUnread();
+
+        if (unread == 0) {
+            unreadView.setVisibility(View.INVISIBLE);
+        } else {
+            unreadView.setText(String.valueOf(unread));
+            unreadView.setVisibility(View.VISIBLE);
+        }
+
         ImageView avatarView = (ImageView) view.findViewById(R.id.vkDialogAvatar);
 
         if (dialog.getAvatarUrl().equals("")) {
