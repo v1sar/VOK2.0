@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 public class PreferenceHelper {
 
     public static final String ENABLE_INVISIBLE = "enable_invisible";
+    public static final String BACKGROUND_COLOR = "background_color";
 
     private static PreferenceHelper instance;
 
@@ -41,6 +42,16 @@ public class PreferenceHelper {
 
     public boolean getBoolean(String key){
            return preferences.getBoolean(key,false);
+    }
+
+    public void putInt(String key, int value) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(key,value);
+        editor.apply();
+    }
+
+    public int getInt(String key) {
+        return preferences.getInt(key, 0xFFFFFFFF);
     }
 
 }

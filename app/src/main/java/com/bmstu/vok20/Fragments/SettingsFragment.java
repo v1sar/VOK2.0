@@ -7,16 +7,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 
+import com.bmstu.vok20.Helpers.DialogBuilders;
 import com.bmstu.vok20.Helpers.PreferenceHelper;
 import com.bmstu.vok20.R;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SettingsFragment extends Fragment {
+public class SettingsFragment extends Fragment implements DialogBuilders.ColorPicked {
 
+    DialogBuilders dialogBuilders = new DialogBuilders();
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -44,7 +47,21 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        Button colorBtn = (Button) view.findViewById(R.id.color_picker_button);
+
+        colorBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogBuilders.colorPickerDialogBuilder(getActivity(), SettingsFragment.this).show();
+            }
+        });
+
         return view;
     }
 
+    @Override
+    public void picked() {
+        View view = getActivity().getWindow().getDecorView();
+        view.setBackgroundColor(PreferenceHelper.getInstance().getInt(PreferenceHelper.BACKGROUND_COLOR));
+    }
 }

@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.bmstu.vok20.Fragments.SettingsFragment;
+import com.bmstu.vok20.Helpers.PreferenceHelper;
 import com.bmstu.vok20.VK.VKDialogsFragment;
 import com.bmstu.vok20.VK.VKLongPollService;
 import com.bmstu.vok20.VK.VKMessagesFragment;
@@ -33,6 +34,7 @@ import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
 import android.Manifest;
+import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -82,9 +84,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             );
         }
         /*** ***/
-
+        setBackgroundColor();
         vkActionReceiver = new VKActionReceiver();
         VKLongPollService.startActionUpdateMessages(MainActivity.this);
+    }
+
+    private void setBackgroundColor() {
+        View view = this.getWindow().getDecorView();
+        view.setBackgroundColor(PreferenceHelper.getInstance().getInt(PreferenceHelper.BACKGROUND_COLOR));
     }
 
     @Override

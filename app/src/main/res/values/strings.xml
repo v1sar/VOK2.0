@@ -7,4 +7,6 @@
     <string name="send">Отправить</string>
     <string name="sendMessage">Введите сообщение</string>
     <string name="invisible">Enable invisible</string>
+    <string name="background_color">Choose background color</string>
+    <string name="choose_color">Choose</string>
 </resources>
