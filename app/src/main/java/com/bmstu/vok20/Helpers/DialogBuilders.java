@@ -30,7 +30,8 @@ public class DialogBuilders {
                 .with(context)
                 .setTitle("Choose color")
                 .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
-                .density(12)
+                .noSliders()
+                .density(20)
                 .setPositiveButton("ok", new ColorPickerClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {

@@ -22,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.bmstu.vok20.Fragments.AboutFragment;
 import com.bmstu.vok20.Fragments.SettingsFragment;
 import com.bmstu.vok20.Helpers.PreferenceHelper;
 import com.bmstu.vok20.VK.VKDialogsFragment;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String VK_DIALOGS_FRAGMENT_TAG = "VK_DIALOGS_FRAGMENT_TAG";
     public static final String SETTINGS_FRAGMENT_TAG = "SETTINGS_FRAGMENT_TAG";
     public static final String VK_MESSAGES_FRAGMENT_TAG = "VK_MESSAGES_FRAGMENT_TAG";
+    public static final String ABOUT_FRAGMENT_TAG = "ABOUT_FRAGMENT_TAG";
 
     private VKActionReceiver vkActionReceiver;
 
@@ -139,12 +141,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showSettingsFragment();
                 break;
             }
+            case R.id.nav_about: {
+                showAboutFragment();
+                break;
+            }
             default: break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showAboutFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.content_main, new AboutFragment(), ABOUT_FRAGMENT_TAG);
+        transaction.commit();
     }
 
     private void showSettingsFragment() {

@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bmstu.vok20.Fragments.AboutFragment"
+
+    android:orientation="vertical"
+    android:layout_marginTop="100dp">
+
+    <TextView
+        android:id="@+id/vok_proj"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="35sp"
+        android:textStyle="bold"
+        android:textColor="@color/light_font"
+        android:shadowColor="@color/text_shadow"
+        android:shadowDx="-5"
+        android:shadowDy="-1"
+        android:shadowRadius="10"
+        android:text="@string/project_name"
+        android:layout_gravity="center"
+        />
+
+        <TextView
+            android:textStyle="italic"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/vok_proj"
+            android:text="@string/authors"
+            android:layout_gravity="center"/>
+
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:autoLink="web"
+        android:text="@string/github"
+        android:layout_gravity="center"/>
+
+</LinearLayout>
