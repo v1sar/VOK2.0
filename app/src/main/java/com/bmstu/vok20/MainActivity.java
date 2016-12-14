@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String VK_DIALOGS_FRAGMENT_TAG = "VK_DIALOGS_FRAGMENT_TAG";
     public static final String SETTINGS_FRAGMENT_TAG = "SETTINGS_FRAGMENT_TAG";
     public static final String VK_MESSAGES_FRAGMENT_TAG = "VK_MESSAGES_FRAGMENT_TAG";
+    public static final String VK_USERS_FRAGMENT_TAG = "VK_USERS_FRAGMENT_TAG";
     public static final String ABOUT_FRAGMENT_TAG = "ABOUT_FRAGMENT_TAG";
 
     private VKActionReceiver vkActionReceiver;

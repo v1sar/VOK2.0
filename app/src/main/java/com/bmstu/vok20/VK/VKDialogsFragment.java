@@ -3,14 +3,21 @@ package com.bmstu.vok20.VK;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.bmstu.vok20.Fragments.SettingsFragment;
 import com.bmstu.vok20.Helpers.DatabaseHelper;
+import com.bmstu.vok20.MainActivity;
 import com.bmstu.vok20.R;
 import com.bmstu.vok20.Helpers.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -61,10 +68,24 @@ public class VKDialogsFragment extends Fragment {
         return view;
     }
 
+    private void setFAB() {
+        FloatingActionButton fabButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.content_main, new VKUsersFragment(), MainActivity.VK_USERS_FRAGMENT_TAG);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
+    }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        setFAB();
         vkDialogsListView = (ListView) vkDialogsView.findViewById(R.id.vkDialogList);
         if (!Utils.isOnline(getActivity())) {
             getVKDialogsFromDB();
