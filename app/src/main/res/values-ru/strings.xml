@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VOK2.0</string>
+    <integer name="com_vk_sdk_AppId">5707317</integer>
+    <string name="navigation_drawer_open">Открыть навигацию</string>
+    <string name="navigation_drawer_close">Закрыть навигацию</string>
+    <string name="hello_string">Добро пожаловать!\n Авторизируйтесь в Вконтакте!</string>
+    <string name="send">Отправить</string>
+    <string name="sendMessage">Введите сообщение</string>
+    <string name="invisible">Включить невидимку</string>
+    <string name="background_color">Выберите цвет фона</string>
+    <string name="choose_color">Выбрать</string>
+    <string name="authors">Дмитрий Мовчан\nАнтон Телышевпше </string>
+    <string name="project_name">VOK project</string>
+    <string name="github">www.github.com/Antonboom/VOK2.0</string>
+    <string name="notificationTitle">Вы получили новое сообщение!</string>
+    <string name="notificationBody">Нажмите чтобы открыть приложение</string>
+</resources>
