@@ -253,4 +253,22 @@ public class VKMessagesFragment extends Fragment {
         }
         return databaseHelper;
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        EditText editText = (EditText) getActivity().findViewById(R.id.vkSendMessageInput);
+        outState.putString("msgBody", String.valueOf(editText.getText()));
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        EditText editText = (EditText) getActivity().findViewById(R.id.vkSendMessageInput);
+        try {
+            editText.setText(savedInstanceState.getString("msgBody"));
+        } catch (Exception e) {
+            Log.d(getTag(), "No msg in editText");
+        }
+    }
 }

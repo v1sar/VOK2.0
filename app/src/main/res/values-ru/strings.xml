@@ -10,7 +10,7 @@
     <string name="invisible">Включить невидимку</string>
     <string name="background_color">Выберите цвет фона</string>
     <string name="choose_color">Выбрать</string>
-    <string name="authors">Дмитрий Мовчан\nАнтон Телышевпше </string>
+    <string name="authors">Дмитрий Мовчан\nАнтон Телышев</string>
     <string name="project_name">VOK project</string>
     <string name="github">www.github.com/Antonboom/VOK2.0</string>
     <string name="notificationTitle">Вы получили новое сообщение!</string>
