@@ -54,17 +54,23 @@ public class VKUsersFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        view.findViewById(R.id.find_users_btn).setOnClickListener(new View.OnClickListener() {
+        final View tempView = view;
+        if (recyclerViewAdapter != null) {
+            ((VKUsersAdapter)recyclerViewAdapter).clearData();
+            recyclerViewAdapter.notifyDataSetChanged();
+        }
+        tempView.findViewById(R.id.find_users_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                query = ((EditText) view.findViewById(R.id.users_query)).getText().toString();
+                query = ((EditText) tempView.findViewById(R.id.users_query)).getText().toString();
                 VKRequest findRequest = new VKRequest(
                         USERS_TO_FIND,
                         VKParameters.from(
                                 VKApiConst.Q, query,
-                                VKApiConst.COUNT, USERS_COUNT
+                                VKApiConst.COUNT, USERS_COUNT,
+                                VKApiConst.FIELDS, "photo_200"
                         )
                 );
                 findRequest.executeWithListener(new VKRequest.VKRequestListener() {
@@ -76,8 +82,18 @@ public class VKUsersFragment extends Fragment {
                             messageJSONItems = response.json.getJSONObject("response").getJSONArray("items");
                             for (int i = 0; i < messageJSONItems.length(); i++) {
                                 VKUsers tempUser = new VKUsers(messageJSONItems.getJSONObject(i).getString("first_name"),
-                                        messageJSONItems.getJSONObject(i).getString("last_name"));
+                                        messageJSONItems.getJSONObject(i).getString("last_name"),
+                                        messageJSONItems.getJSONObject(i).getInt("id"),
+                                        "");
                                 foundUsers.add(tempUser);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            messageJSONItems = response.json.getJSONObject("response").getJSONArray("items");
+                            for (int i = 0; i < messageJSONItems.length(); i++) {
+                                foundUsers.get(i).setUrl(messageJSONItems.getJSONObject(i).getString("photo_200"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -100,4 +116,6 @@ public class VKUsersFragment extends Fragment {
         recyclerViewAdapter = new VKUsersAdapter(getActivity(), foundUsers);
         recyclerView.setAdapter(recyclerViewAdapter);
     }
+
+
 }
