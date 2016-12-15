@@ -12,6 +12,8 @@
     <string name="authors">Dmitriy Movchan\nAnton Telyshev</string>
     <string name="project_name">VOK project</string>
     <string name="github">www.github.com/Antonboom/VOK2.0</string>
+    <string name="notificationTitle">You received a new message!</string>
+    <string name="notificationBody">Click this to open app</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
