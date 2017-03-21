@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.bmstu.vok20.Helpers.NotificationHelper;
 import com.bmstu.vok20.Helpers.UrlDownloader;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
@@ -54,9 +55,11 @@ public class VKLongPollService extends IntentService {
         context.startService(intent);
     }
 
-    private void sendNewMessageBroadcast() {
+    private void sendNewMessageBroadcast(String msgBody) {
         LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         Intent intent = new Intent(ACTION_VK_NEW_MESSAGE);
+        NotificationHelper notificationHelper = new NotificationHelper(getApplicationContext(), msgBody);
+        notificationHelper.sendNotificationNewMsg();
         broadcastManager.sendBroadcast(intent);
     }
 
@@ -122,7 +125,7 @@ public class VKLongPollService extends IntentService {
                         for (int i = 0; i < longPollUpdates.length(); i++) {
 
                             if (longPollUpdates.getJSONArray(i).getInt(0) == VK_NEW_MESSAGE_EVENT_CODE) {
-                                sendNewMessageBroadcast();
+                                sendNewMessageBroadcast(longPollUpdates.getJSONArray(i).getString(6));
                                 Log.d(TAG, "New VK message: " + longPollUpdates.getJSONArray(i).toString());
                             }
                         }

@@ -22,6 +22,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.bmstu.vok20.Fragments.AboutFragment;
+import com.bmstu.vok20.Fragments.SettingsFragment;
+import com.bmstu.vok20.Helpers.PreferenceHelper;
 import com.bmstu.vok20.VK.VKDialogsFragment;
 import com.bmstu.vok20.VK.VKLongPollService;
 import com.bmstu.vok20.VK.VKMessagesFragment;
@@ -32,6 +35,7 @@ import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
 import android.Manifest;
+import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,7 +45,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int REQUEST_WRITE_STORAGE = 112;
 
     public static final String VK_DIALOGS_FRAGMENT_TAG = "VK_DIALOGS_FRAGMENT_TAG";
+    public static final String SETTINGS_FRAGMENT_TAG = "SETTINGS_FRAGMENT_TAG";
     public static final String VK_MESSAGES_FRAGMENT_TAG = "VK_MESSAGES_FRAGMENT_TAG";
+    public static final String VK_USERS_FRAGMENT_TAG = "VK_USERS_FRAGMENT_TAG";
+    public static final String ABOUT_FRAGMENT_TAG = "ABOUT_FRAGMENT_TAG";
 
     private VKActionReceiver vkActionReceiver;
 
@@ -80,9 +87,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             );
         }
         /*** ***/
-
+        setBackgroundColor();
         vkActionReceiver = new VKActionReceiver();
         VKLongPollService.startActionUpdateMessages(MainActivity.this);
+    }
+
+    private void setBackgroundColor() {
+        View view = this.getWindow().getDecorView();
+        view.setBackgroundColor(PreferenceHelper.getInstance().getInt(PreferenceHelper.BACKGROUND_COLOR));
     }
 
     @Override
@@ -126,12 +138,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showVKDialogsFragment();
                 break;
             }
+            case R.id.nav_settings: {
+                showSettingsFragment();
+                break;
+            }
+            case R.id.nav_about: {
+                showAboutFragment();
+                break;
+            }
             default: break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showAboutFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.content_main, new AboutFragment(), ABOUT_FRAGMENT_TAG);
+        transaction.commit();
+    }
+
+    private void showSettingsFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.content_main, new SettingsFragment(), SETTINGS_FRAGMENT_TAG);
+        transaction.commit();
     }
 
     private void showVKDialogsFragment() {

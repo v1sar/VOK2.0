@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.bmstu.vok20.Helpers.DatabaseHelper;
+import com.bmstu.vok20.Helpers.PreferenceHelper;
 import com.bmstu.vok20.R;
 import com.bmstu.vok20.Helpers.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -43,6 +44,9 @@ public class VKMessagesFragment extends Fragment {
 
     private static final String MESSAGES_GET_HISTORY_METHOD = "messages.getHistory";
     private static final String MESSAGES_SEND_METHOD = "messages.send";
+    private static final String MESSAGES_MARK_AS_READ_METHOD = "messages.markAsRead";
+    private static final String MESSAGES_TO_READ = "message_ids";
+
 
     private static final int MESSAGES_COUNT = 30;
     private static final int MESSAGES_REVERSE = 0;
@@ -135,7 +139,25 @@ public class VKMessagesFragment extends Fragment {
                 }
 
                 Collections.reverse(messageList);
-
+                // Пометить как прочитанные
+                if (!PreferenceHelper.getInstance().getBoolean(PreferenceHelper.ENABLE_INVISIBLE)) {
+                    StringBuilder messagesIDs = new StringBuilder();
+                    for (VKApiMessage simpleMessage : messageList) {
+                        messagesIDs.append(String.valueOf(simpleMessage.getId()));
+                        messagesIDs.append(", ");
+                    }
+                    VKRequest messagesReadRequest = new VKRequest(
+                            MESSAGES_MARK_AS_READ_METHOD,
+                            VKParameters.from(MESSAGES_TO_READ, messagesIDs.toString())
+                    );
+                    messagesReadRequest.executeWithListener(new VKRequest.VKRequestListener() {
+                        @Override
+                        public void onComplete(VKResponse response) {
+                            super.onComplete(response);
+                            Log.d(getTag(), "Messages read");
+                        }
+                    });
+                }
                 // Добавление сообщений в БД
                 for (VKApiMessage message : messageList) {
                     try {
@@ -200,7 +222,8 @@ public class VKMessagesFragment extends Fragment {
                         VKApiConst.MESSAGE, messageText
                 )
         );
-
+        final Button sendButton = (Button) vkMessagesView.findViewById(R.id.vkSendMessageBtn);
+        sendButton.setClickable(false);
         sendMessageRequest.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
@@ -210,12 +233,15 @@ public class VKMessagesFragment extends Fragment {
                 messages.add(new VKMessage(messageText, true));
                 vkMessagesAdapter.updateList(messages);
                 Log.d(TAG, "Message send to user" + userId);
+                ((EditText) vkMessagesView.findViewById(R.id.vkSendMessageInput)).setText("");
+                sendButton.setClickable(true);
             }
 
             @Override
             public void onError(VKError error) {
                 super.onError(error);
                 messages.remove(messages.size() - 1);
+                sendButton.setClickable(true);
             }
         });
     }   // sendVKMessage
@@ -226,5 +252,23 @@ public class VKMessagesFragment extends Fragment {
                     OpenHelperManager.getHelper(getActivity(), DatabaseHelper.class);
         }
         return databaseHelper;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        EditText editText = (EditText) getActivity().findViewById(R.id.vkSendMessageInput);
+        outState.putString("msgBody", String.valueOf(editText.getText()));
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        EditText editText = (EditText) getActivity().findViewById(R.id.vkSendMessageInput);
+        try {
+            editText.setText(savedInstanceState.getString("msgBody"));
+        } catch (Exception e) {
+            Log.d(getTag(), "No msg in editText");
+        }
     }
 }

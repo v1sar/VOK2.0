@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/vkDialogList" />
-</LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fab"
+        android:layout_alignEnd="@id/vkDialogList"
+        android:layout_alignBottom="@id/vkDialogList"
+        android:src="@drawable/ic_search_white_24dp"
+        android:layout_alignRight="@id/vkDialogList"
+        android:layout_margin="16dp"
+        app:backgroundTint="@color/colorPrimary"/>
+
+</RelativeLayout>

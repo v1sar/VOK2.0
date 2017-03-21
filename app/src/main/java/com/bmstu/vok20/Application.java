@@ -2,6 +2,7 @@ package com.bmstu.vok20;
 
 import android.util.Log;
 
+import com.bmstu.vok20.Helpers.PreferenceHelper;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
@@ -27,5 +28,6 @@ public class Application extends android.app.Application{
         super.onCreate();
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);
+        PreferenceHelper.getInstance().init(getApplicationContext());
     }
 }
